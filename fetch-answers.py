@@ -15,6 +15,8 @@ def load_cache():
             return json.load(f)
     return {}
 
+cache=load_cache()
+
 def save_cache(cache):
     """Saves the cache dictionary to a JSON file."""
     with open(CACHE_FILE, "w") as f:
@@ -60,51 +62,48 @@ def search_stackoverflow(query):
         print("❌ Error fetching search results:", response.status_code)
         return None
 
-def fetch_best_answers(question_url, num_answers=3):
-    """Fetches multiple highly upvoted answers, using caching for faster performance."""
-    question_id = extract_question_id(question_url)
+def fetch_best_answers(question_link, num_answers=3):
+    """Fetch top answers for a given Stack Overflow question, using cache if available."""
+    question_id = extract_question_id(question_link)
+
+    # Check cache first
+    if question_id in cache:
+        print("✅ Using cached data.")
+        return cache[question_id]  # Return cached answers
+
+    print("🌍 Fetching answers from Stack Overflow API...")
     
-    if not question_id:
-        print("❌ Invalid question URL. Please enter a valid Stack Overflow link.")
-        return
+    url = f"https://api.stackexchange.com/2.3/questions/{question_id}/answers"
+    params = {
+        "order": "desc",
+        "sort": "votes",
+        "site": "stackoverflow",
+        "filter": "!9_bDDxJY5"
+    }
 
-    cache = load_cache()
+    response = requests.get(url, params=params)
+    data = response.json()
 
-    if question_id in cache and time.time() - cache[question_id]["timestamp"] < CACHE_EXPIRY:
-        print("🔄 Loading cached answers...\n")
-        answers = cache[question_id]["answers"]
-    else:
-        print("🌐 Fetching new answers from Stack Overflow...\n")
-        url = f"https://api.stackexchange.com/2.3/questions/{question_id}/answers?order=desc&sort=votes&site=stackoverflow&filter=withbody"
-        response = requests.get(url)
+    print("🔍 API Response:", data)  # This will help debug
 
-        if response.status_code == 200:
-            data = response.json()
-            answers = data.get("items", [])
+    if "items" not in data or not data["items"]:
+        print("⚠️ No answers found. API might have returned an empty response.")
+        return []
 
-            if not answers:
-                print("❌ No answers found for this question.")
-                return
+    sorted_answers = sorted(
+        data["items"], 
+        key=lambda ans: (ans.get("is_accepted", False), ans["score"]), 
+        reverse=True
+    )
 
-            cache[question_id] = {
-                "timestamp": time.time(),
-                "answers": answers
-            }
-            save_cache(cache)
-        else:
-            print("❌ Error fetching answers:", response.status_code)
-            return
+    best_answers = sorted_answers[:num_answers]
 
-    print("\n" + "=" * 50)
-    print(f"✅ Top {min(num_answers, len(answers))} Answers:\n")
+    # Save to cache before returning
+    cache[question_id] = best_answers
+    save_cache(cache)
 
-    for i, answer in enumerate(answers[:num_answers]):
-        cleaned_answer = clean_html(answer['body'])
-        print(f"🔹 **Answer {i+1} (Votes: {answer['score']})**\n")
-        print(cleaned_answer)
-        print("-" * 50 + "\n")
+    return best_answers
 
-    print("=" * 50 + "\n")
 
 if __name__ == "__main__":
     search_query = input("Enter your Stack Overflow search query: ")

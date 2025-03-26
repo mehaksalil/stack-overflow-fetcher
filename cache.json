@@ -1,0 +1,61 @@
+{
+    "280243": [
+        {
+            "owner": {
+                "reputation": 415045,
+                "user_id": 4279,
+                "user_type": "registered",
+                "accept_rate": 94,
+                "profile_image": "https://www.gravatar.com/avatar/d92ce60d3a4cbe03598e27c2e8dee69d?s=256&d=identicon&r=PG",
+                "display_name": "jfs",
+                "link": "https://stackoverflow.com/users/4279/jfs"
+            },
+            "is_accepted": true,
+            "score": 74,
+            "last_activity_date": 1480991483,
+            "last_edit_date": 1495541896,
+            "creation_date": 1226488215,
+            "answer_id": 283630,
+            "question_id": 280243,
+            "content_license": "CC BY-SA 3.0"
+        },
+        {
+            "owner": {
+                "reputation": 41893,
+                "user_id": 11527,
+                "user_type": "registered",
+                "accept_rate": 40,
+                "profile_image": "https://i.sstatic.net/2YJM0.jpg?s=256",
+                "display_name": "Ber",
+                "link": "https://stackoverflow.com/users/11527/ber"
+            },
+            "is_accepted": false,
+            "score": 163,
+            "last_activity_date": 1455789647,
+            "last_edit_date": 1455789647,
+            "creation_date": 1226439930,
+            "answer_id": 282238,
+            "question_id": 280243,
+            "content_license": "CC BY-SA 3.0"
+        },
+        {
+            "owner": {
+                "reputation": 44340,
+                "user_id": 4960,
+                "user_type": "registered",
+                "accept_rate": 95,
+                "profile_image": "https://www.gravatar.com/avatar/87abac8013353204f39bd6ee7002f528?s=256&d=identicon&r=PG",
+                "display_name": "Nick Stinemates",
+                "link": "https://stackoverflow.com/users/4960/nick-stinemates"
+            },
+            "is_accepted": false,
+            "score": 73,
+            "last_activity_date": 1545840982,
+            "last_edit_date": 1545840982,
+            "creation_date": 1226390089,
+            "answer_id": 280286,
+            "question_id": 280243,
+            "content_license": "CC BY-SA 4.0"
+        }
+    ]
+}

@@ -113,3 +113,14 @@ if __name__ == "__main__":
     if question_link:
         num_answers = int(input("How many answers do you want to fetch? (default: 3): ") or 3)
         fetch_best_answers(question_link, num_answers)
+def load_cache():
+    """Loads cache from file or returns an empty dictionary if cache does not exist or is corrupted."""
+    if os.path.exists(CACHE_FILE):
+        try:
+            with open(CACHE_FILE, "r") as f:
+                data = f.read().strip()
+                return json.loads(data) if data else {}  # If file is empty, return an empty dict
+        except json.JSONDecodeError:
+            print("⚠️ Cache file is corrupted. Resetting cache...")
+            return {}
+    return {}

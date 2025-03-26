@@ -1,6 +1,6 @@
 import requests
 import re
-from bs4 import BeautifulSoup  # Import BeautifulSoup for HTML cleaning
+from bs4 import BeautifulSoup
 
 def extract_question_id(url):
     """Extracts the question ID from a Stack Overflow question URL."""
@@ -8,9 +8,14 @@ def extract_question_id(url):
     return match.group(1) if match else None
 
 def clean_html(html_content):
-    """Converts HTML content into readable text."""
+    """Converts HTML content into readable text and formats code snippets."""
     soup = BeautifulSoup(html_content, "html.parser")
-    return soup.get_text()  # Extract readable text
+
+    # Find all <code> tags and wrap them for better visibility
+    for code in soup.find_all("code"):
+        code.string = f"\n📌 Code Snippet:\n{code.get_text()}\n"
+
+    return soup.get_text()  # Extract cleaned text
 
 def fetch_best_answer(question_url):
     """Fetches the highest-voted answer for a given question."""
@@ -28,14 +33,16 @@ def fetch_best_answer(question_url):
         answers = data.get("items", [])
 
         if not answers:
-            print("No answers found for this question.")
+            print("❌ No answers found for this question.")
             return
 
         best_answer = answers[0]
-        cleaned_answer = clean_html(best_answer['body'])  # Clean the HTML
+        cleaned_answer = clean_html(best_answer['body'])  # Clean and format the HTML
 
-        print("\n✅ Best Answer:\n")
+        print("\n" + "=" * 50)
+        print("✅ Best Answer:\n")
         print(cleaned_answer)
+        print("=" * 50 + "\n")
 
     else:
         print("❌ Error fetching answers:", response.status_code)

@@ -124,3 +124,34 @@ def load_cache():
             print("⚠️ Cache file is corrupted. Resetting cache...")
             return {}
     return {}
+def fetch_best_answers(question_link, num_answers=3):
+    """Fetch the top answers for a given Stack Overflow question link."""
+    question_id = extract_question_id(question_link)
+    url = f"https://api.stackexchange.com/2.3/questions/{question_id}/answers"
+    
+    params = {
+        "order": "desc",
+        "sort": "votes",  # Sort answers by votes
+        "site": "stackoverflow",
+        "filter": "!9_bDDxJY5"  # Ensures we get full answer bodies
+    }
+
+    response = requests.get(url, params=params)
+    data = response.json()
+
+    if "items" not in data or not data["items"]:
+        print("No answers found.")
+        return
+    
+    # Rank answers: Accepted ones come first, then highest voted
+    sorted_answers = sorted(
+        data["items"], 
+        key=lambda ans: (ans.get("is_accepted", False), ans["score"]), 
+        reverse=True
+    )
+
+    # Print or return the top `num_answers`
+    for answer in sorted_answers[:num_answers]:
+        print(f"Answer (Score: {answer['score']}, Accepted: {answer.get('is_accepted', False)})")
+        print(answer["body"])  # or use BeautifulSoup to clean HTML
+        print("-" * 50)
